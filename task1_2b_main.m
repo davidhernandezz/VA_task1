@@ -26,19 +26,16 @@ in_d = (fix_nod(:, 1) - 1) * dofs + fix_nod(:, 2);
 % Dirichelt displacements vetor
 u_d = fix_nod(:, 3);
 
-A = transpose(1:size(K, 1));
-in_n = setdiff(A, in_d);
+in_n = setdiff(transpose(1:length(K)), in_d);
 
 % gravity acceleration vector
 g = [0; 9.81; 0; 0; 0; 0];
 
-g_vect = repmat(g, 152340/dofs, 1);
+g_vect = repmat(g, length(K)/dofs, 1);
 
 F = M * g_vect;
 
 F_n = F(in_n);
-
-
 
 K_nn = K(in_n, in_n);
 K_dd = K(in_d, in_d);
