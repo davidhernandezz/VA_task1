@@ -1,4 +1,4 @@
-clear all
+clear
 close all
 clc
 
@@ -6,6 +6,9 @@ clc
 %% input data definition
 % load K & M matrix
 load('fe_model.mat');
+
+% gravity acceleration vector
+g = [0; 9.81*10^3; 0; 0; 0; 0];
 
 % define n_dof 
 dofs = 6;
@@ -19,23 +22,17 @@ n_supports = [10735; 13699; 16620; 19625; 22511; 4747];
 fix_nod = fixnodes(n_supports, dofs);
 
 % Dirichelt index vector
-in_d = (fix_nod(:, 1) - 1) * 6 + fix_nod(:, 2);
+in_d = (fix_nod(:, 1) - 1) * dofs + fix_nod(:, 2);
 % Dirichelt displacements vetor
 u_d = fix_nod(:, 3);
 
-A = transpose(1:size(K, 1));
-in_n = setdiff(A, in_d);
+in_n = setdiff(transpose(1:length(K)), in_d);
 
-% gravity acceleration vector
-g = [0; 9.81*10^3; 0; 0; 0; 0];
-
-g_vect = repmat(g, 152340/6, 1);
+g_vect = repmat(g, length(M)/dofs, 1);
 
 F = M * g_vect;
 
 F_n = F(in_n);
-
-
 
 K_nn = K(in_n, in_n);
 K_dd = K(in_d, in_d);
@@ -48,13 +45,15 @@ u_n = K_nn\(F_n - K_nd * u_d);
 u(in_n, 1) = u_n;
 u(in_d, 1) = u_d;
 
-u = transpose(reshape(u, [dofs, length(K)/6]));
+u = transpose(reshape(u, [dofs, length(K)/dofs]));
 
 F_d = K_dd*u_d + K_dn*u_n;
 
 F(in_n) = F_n;
 F(in_d) = F_d;
-F = transpose(reshape(F, [dofs, length(K)/6]));
+F = transpose(reshape(F, [dofs, length(K)/dofs]));
+
+%fillhdf('template.h5','example.h5',u)
 
 % postprocessar resultats
     % obrir meta
