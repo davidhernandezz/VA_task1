@@ -2,11 +2,11 @@ clear
 close all
 clc
 
-%% DATA INPUT 
+%% DATA INPUT
 % load K & M matrix
 load('fe_model.mat');
 
-% define n_dof 
+% define n_dof
 dofs = 6;
 
 % define the nodes where supports are located
@@ -15,40 +15,47 @@ n_supports = [10735; 13699; 16620; 19625; 22511; 4747];
 ref_node = 1305;
 
 y_displ_support = 1; %unit displacement
-displ_supp = 2; %potser s'hauria de programar amb un for i fer per a displaçament unitari dels 6 fixats
 
-%% CALCULATIONS
+result = zeros(length(n_supports),dofs);
 
-fix_nod = fixnodes_2a(n_supports, dofs, displ_supp, y_displ_support);
+for displ_supp = 1:length(n_supports) %computes the reference point displacement for a given displacement in the y axis of each of the supports
 
-% Dirichelt index vector
-in_d = (fix_nod(:, 1) - 1) * dofs + fix_nod(:, 2);
-% Dirichelt displacements vetor
-u_d = fix_nod(:, 3);
+    %% CALCULATIONS
 
-A = transpose(1:size(K, 1));
-in_n = setdiff(A, in_d);
+    fix_nod = fixnodes_2a(n_supports, dofs, displ_supp, y_displ_support);
 
-% gravity acceleration vector
-g = [0; 9.81*10^3; 0; 0; 0; 0];
+    % Dirichelt index vector
+    in_d = (fix_nod(:, 1) - 1) * dofs + fix_nod(:, 2);
+    % Dirichelt displacements vetor
+    u_d = fix_nod(:, 3);
 
-g_vect = repmat(g, 152340/dofs, 1);
+    A = transpose(1:size(K, 1));
+    in_n = setdiff(A, in_d);
 
-F = M * g_vect;
+    % gravity acceleration vector
+    g = [0; 9.81*10^3; 0; 0; 0; 0];
 
-F_n = F(in_n);
+    g_vect = repmat(g, 152340/dofs, 1);
 
-K_nn = K(in_n, in_n);
-K_dd = K(in_d, in_d);
-K_nd = K(in_n, in_d);
-K_dn = K(in_d, in_n);
+    F = M * g_vect;
 
-% displacements and forces vectors
-u_n = K_nn\(F_n - K_nd * u_d);
+    F_n = F(in_n);
 
-u(in_n, 1) = u_n;
-u(in_d, 1) = u_d;
+    K_nn = K(in_n, in_n);
+    K_dd = K(in_d, in_d);
+    K_nd = K(in_n, in_d);
+    K_dn = K(in_d, in_n);
 
-u = transpose(reshape(u, [dofs, length(K)/dofs]));
-% displacements of the reference node
-result = u(ref_node, :);
+    % displacements and forces vectors
+    u_n = K_nn\(F_n - K_nd * u_d);
+
+    u = zeros(length(K),1);
+
+    u(in_n, 1) = u_n;
+    u(in_d, 1) = u_d;
+
+    u = transpose(reshape(u, [dofs, length(K)/dofs]));
+    % displacements of the reference node
+    result(displ_supp,:) = u(ref_node, :);
+
+end
