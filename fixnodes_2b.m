@@ -1,4 +1,4 @@
-function fix_nod = fixnodes_p2(n_supports, ref_node, dofs, x_rot, y_rot)
+function fix_nod = fixnodes_2b(n_supports, ref_node, dofs, x_rot, y_rot)
 
 % per fer la matriu de moviments coneguts, Dirichelt, es fa igual que per
 % al problema 1, pero el dof 2, y, ja que es desonegut, es la peça que s'ha
@@ -6,8 +6,9 @@ function fix_nod = fixnodes_p2(n_supports, ref_node, dofs, x_rot, y_rot)
 % node, la qual es coneguda ja que es el displacement per en signe
 % contrari, per a que aquest sigui 0
 
+
 k = 1;
-for i = 1:size(n_supports)
+for i = 1:length(n_supports)
     for j = 1:dofs
         if j == 2
 

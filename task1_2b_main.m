@@ -19,10 +19,10 @@ y_rot = 20*10^-3;
 
 %% CALCULATIONS
 
-fix_nod = fixnodes_p2(n_supports, ref_node, dofs, x_rot, y_rot);
+fix_nod = fixnodes_2b(n_supports, ref_node, dofs, x_rot, y_rot);
 
 % Dirichelt index vector
-in_d = (fix_nod(:, 1) - 1) * 6 + fix_nod(:, 2);
+in_d = (fix_nod(:, 1) - 1) * dofs + fix_nod(:, 2);
 % Dirichelt displacements vetor
 u_d = fix_nod(:, 3);
 
@@ -32,7 +32,7 @@ in_n = setdiff(A, in_d);
 % gravity acceleration vector
 g = [0; 9.81; 0; 0; 0; 0];
 
-g_vect = repmat(g, 152340/6, 1);
+g_vect = repmat(g, 152340/dofs, 1);
 
 F = M * g_vect;
 
@@ -51,7 +51,7 @@ u_n = K_nn\(F_n - K_nd * u_d);
 u(in_n, 1) = u_n;
 u(in_d, 1) = u_d;
 
-u = transpose(reshape(u, [dofs, length(K)/6]));
+u = transpose(reshape(u, [dofs, length(K)/dofs]));
 
 % new shims dimensions
 new_dimensions = 1000 - u(n_supports(:, 1), 2);

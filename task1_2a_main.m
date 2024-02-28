@@ -14,15 +14,15 @@ n_supports = [10735; 13699; 16620; 19625; 22511; 4747];
 % define the referecne node
 ref_node = 1305;
 
-y_displ_support = 1;
-displ_supp = 2;
+y_displ_support = 1; %unit displacement
+displ_supp = 2; %potser s'hauria de programar amb un for i fer per a displaçament unitari dels 6 fixats
 
 %% CALCULATIONS
 
-fix_nod = fixnodes_p2_1(n_supports, dofs, displ_supp, y_displ_support);
+fix_nod = fixnodes_2a(n_supports, dofs, displ_supp, y_displ_support);
 
 % Dirichelt index vector
-in_d = (fix_nod(:, 1) - 1) * 6 + fix_nod(:, 2);
+in_d = (fix_nod(:, 1) - 1) * dofs + fix_nod(:, 2);
 % Dirichelt displacements vetor
 u_d = fix_nod(:, 3);
 
@@ -32,7 +32,7 @@ in_n = setdiff(A, in_d);
 % gravity acceleration vector
 g = [0; 9.81*10^3; 0; 0; 0; 0];
 
-g_vect = repmat(g, 152340/6, 1);
+g_vect = repmat(g, 152340/dofs, 1);
 
 F = M * g_vect;
 
@@ -49,6 +49,6 @@ u_n = K_nn\(F_n - K_nd * u_d);
 u(in_n, 1) = u_n;
 u(in_d, 1) = u_d;
 
-u = transpose(reshape(u, [dofs, length(K)/6]));
+u = transpose(reshape(u, [dofs, length(K)/dofs]));
 % displacements of the reference node
-result = u(1305, :);
+result = u(ref_node, :);
