@@ -1,4 +1,4 @@
-function fix_nod = fixnodes_2b(n_supports, ref_node, dofs, x_rot, y_rot)
+function fix_nod = fixnodes_2b(n_supports, ref_node, dofs, x_rot, z_rot)
 
 % per fer la matriu de moviments coneguts, Dirichelt, es fa igual que per
 % al problema 1, pero el dof 2, y, ja que es desonegut, es la peça que s'ha
@@ -21,7 +21,7 @@ for i = 1:length(n_supports)
     end
 end
 
-ref_node_fix = [ref_node 4 -x_rot; ref_node 5 -y_rot];
+ref_node_fix = [ref_node 4 -x_rot; ref_node 6 -z_rot];
 
 % aixo junta les dues matrius en una sola
 fix_nod = cat(1, fix_nod, ref_node_fix);

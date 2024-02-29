@@ -14,12 +14,12 @@ n_supports = [10735; 13699; 16620; 19625; 22511; 4747];
 % define the referecne node
 ref_node = 1305;
 % displacement of the reference node
-x_rot = -50*10^-3;
-y_rot = 20*10^-3;
+x_rot = -0.5*10^-3;
+z_rot = 0.2*10^-3;
 
 %% CALCULATIONS
 
-fix_nod = fixnodes_2b(n_supports, ref_node, dofs, x_rot, y_rot);
+fix_nod = fixnodes_2b(n_supports, ref_node, dofs, x_rot, z_rot);
 
 % Dirichelt index vector
 in_d = (fix_nod(:, 1) - 1) * dofs + fix_nod(:, 2);
@@ -29,7 +29,7 @@ u_d = fix_nod(:, 3);
 in_n = setdiff(transpose(1:length(K)), in_d);
 
 % gravity acceleration vector
-g = [0; 9.81; 0; 0; 0; 0];
+g = [0; 0; 0; 0; 0; 0];
 
 g_vect = repmat(g, length(K)/dofs, 1);
 
@@ -51,7 +51,7 @@ u(in_d, 1) = u_d;
 u = transpose(reshape(u, [dofs, length(K)/dofs]));
 
 % new shims dimensions
-new_dimensions = 1000 - u(n_supports(:, 1), 2);
+new_dimensions = 1 - u(n_supports(:, 1), 2);
 
 
 % shauria de revisar les unitats dels imputs, que nose si s'ha de ficar en
