@@ -44,7 +44,12 @@ K_nd = K(in_n, in_d);
 K_dn = K(in_d, in_n);
 
 % displacements and forces vectors
+
 u_n = K_nn\(F_n_ext - K_nd * u_d);
+
+u_n(dofs * ref_node - (dofs - 1) : dofs * ref_node) = [0; 0; 0; -x_rot; 0; -z_rot];
+
+% u_d = K_nd\(F_n_ext - K_nn * u_n)
 
 u(in_n, 1) = u_n;
 u(in_d, 1) = u_d;
@@ -58,14 +63,56 @@ F(in_d) = F_d + F_d_ext;
 
 F = transpose(reshape(F, [dofs, length(K)/dofs]));
 
+
+% new shims dimensions
+new_dimensions = u(n_supports(:, 1), 2);
+
+
+fix_nod = fixnodes_2c(n_supports, dofs, new_dimensions);
+
+% Dirichelt index vector
+in_d = (fix_nod(:, 1) - 1) * dofs + fix_nod(:, 2);
+% Dirichelt displacements vetor
+u_d = fix_nod(:, 3);
+
+in_n = setdiff(transpose(1:length(K)), in_d);
+
+% gravity acceleration vector
+g = [0; 0; 0; 0; 0; 0];
+
+g_vect = repmat(g, length(K)/dofs, 1);
+
+Fext = M * g_vect;
+
+F_n_ext = Fext(in_n);
+F_d_ext = Fext(in_d);
+
+K_nn = K(in_n, in_n);
+K_dd = K(in_d, in_d);
+K_nd = K(in_n, in_d);
+K_dn = K(in_d, in_n);
+
+% displacements and forces vectors
+u_n = K_nn\(F_n_ext - K_nd * u_d);
+
+u = zeros(length(K),1);
+
+u(in_n, 1) = u_n;
+u(in_d, 1) = u_d;
+
+u = transpose(reshape(u, [dofs, length(K)/dofs]));
+
+F_d = K_dd*u_d + K_dn*u_n;
+
+F = zeros(length(K),1);
+
+F(in_n) = F_n_ext;
+F(in_d) = F_d + F_d_ext;
+F = transpose(reshape(F, [dofs, length(K)/dofs]));
+
 resultu = u(ref_node, :);
 resultF = F(ref_node, :);
 
 disp(resultu);
 disp(resultF);
-
-% new shims dimensions
-new_dimensions = 1 - u(n_supports(:, 1), 2);
-
-
 

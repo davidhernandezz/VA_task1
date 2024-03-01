@@ -7,21 +7,38 @@ function fix_nod = fixnodes_2b(n_supports, ref_node, dofs, x_rot, z_rot)
 % contrari, per a que aquest sigui 0
 
 
-k = 1;
-for i = 1:length(n_supports)
-    for j = 1:dofs
-        if j == 2
+% k = 1;
+% for i = 1:length(n_supports)
+%     for j = 1:dofs
+%         if j == 2
+%
+%         else
+%             fix_nod(k, 1) = n_supports(i, 1);
+%             fix_nod(k, 2) = j;
+%             fix_nod(k, 3) = 0;
+%             k = k + 1;
+%         end
+%     end
+% end
+%
+% ref_node_fix = [ref_node 4 -x_rot; ref_node 6 -z_rot];
+%
+% % aixo junta les dues matrius en una sola
+% fix_nod = cat(1, fix_nod, ref_node_fix);
 
-        else
-            fix_nod(k, 1) = n_supports(i, 1);
-            fix_nod(k, 2) = j;
-            fix_nod(k, 3) = 0;
-            k = k + 1;
-        end
-    end
-end
+% dofs = dofs - 1;
+%
+% fix_nod = zeros(dofs * length(n_supports),3);
+%
+% for i = 1:length(n_supports)
+%
+%     fix_nod((dofs*i-(dofs-1):dofs*i),1) = n_supports(i);
+%     fix_nod((dofs*i-(dofs-1):dofs*i),2) = [1; 3; 4; 5; 6];
+%     fix_nod((dofs*i-(dofs-1):dofs*i),3) = 0;
+%
+% end
 
-ref_node_fix = [ref_node 4 -x_rot; ref_node 6 -z_rot];
+fix_nod(1:6,1) = ref_node;
+fix_nod(1:6,2) = 1:6;
+fix_nod(1:6,3) = [0; 0; 0; -x_rot; 0; -z_rot];
 
-% aixo junta les dues matrius en una sola
-fix_nod = cat(1, fix_nod, ref_node_fix);
