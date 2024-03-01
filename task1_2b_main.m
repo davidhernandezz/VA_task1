@@ -51,12 +51,18 @@ u(in_d, 1) = u_d;
 
 u = transpose(reshape(u, [dofs, length(K)/dofs]));
 
-% F_d = K_dd*u_d + K_dn*u_n;
-% 
-% F(in_n) = F_n_ext;
-% F(in_d) = F_d + F_d_ext;
-% 
-% F = transpose(reshape(F, [dofs, length(K)/dofs]));
+F_d = K_dd*u_d + K_dn*u_n;
+
+F(in_n) = F_n_ext;
+F(in_d) = F_d + F_d_ext;
+
+F = transpose(reshape(F, [dofs, length(K)/dofs]));
+
+resultu = u(ref_node, :);
+resultF = F(ref_node, :);
+
+disp(resultu);
+disp(resultF);
 
 % new shims dimensions
 new_dimensions = u(n_supports, 2);
