@@ -65,7 +65,7 @@ F = transpose(reshape(F, [dofs, length(K)/dofs]));
 
 
 % new shims dimensions
-new_dimensions = u(n_supports(:, 1), 2);
+new_dimensions = u(n_supports, 2);
 
 
 fix_nod = fixnodes_2c(n_supports, dofs, new_dimensions);
@@ -115,4 +115,6 @@ resultF = F(ref_node, :);
 
 disp(resultu);
 disp(resultF);
+
+new_dimensions = 1 + u(n_supports, 2);
 
