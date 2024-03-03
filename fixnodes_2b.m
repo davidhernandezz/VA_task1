@@ -1,27 +1,15 @@
-function fix_nod = fixnodes_2b(n_supports, ref_node, dofs, x_rot, z_rot)
+function fix_nod = fixnodes_2b(n_supports, dofs, new_dimensions)
+% fa la matriu de nodes, dof i desplaçament, pero imposa desplaçament en y
+% per a un suport
 
-% per fer la matriu de moviments coneguts, Dirichelt, es fa igual que per
-% al problema 1, pero el dof 2, y, ja que es desonegut, es la peça que s'ha
-% de ficar. amés s'afagueix la rotació en x i y, dofs 4 i 5, del reference
-% node, la qual es coneguda ja que es el displacement per en signe
-% contrari, per a que aquest sigui 0
+fix_nod = zeros(dofs * length(n_supports),3);
 
-
-k = 1;
 for i = 1:length(n_supports)
-    for j = 1:dofs
-        if j == 2
 
-        else
-            fix_nod(k, 1) = n_supports(i, 1);
-            fix_nod(k, 2) = j;
-            fix_nod(k, 3) = 0;
-            k = k + 1;
-        end
-    end
+    fix_nod((dofs*i-(dofs-1):dofs*i),1) = n_supports(i);
+    fix_nod((dofs*i-(dofs-1):dofs*i),2) = 1:dofs;
+    fix_nod((dofs*i-(dofs-1):dofs*i),3) = 0;
+
 end
 
-ref_node_fix = [ref_node 4 -x_rot; ref_node 6 -z_rot];
-
-% aixo junta les dues matrius en una sola
-fix_nod = cat(1, fix_nod, ref_node_fix);
+fix_nod([2;8;14;20;26;32], 3) = new_dimensions;

@@ -26,7 +26,7 @@ B = [0; 0; 0; -x_rot; 0; -z_rot];
 % new shims dimensions
 new_dimensions = resultu\B;
 
-fix_nod = fixnodes_2c(n_supports, dofs, new_dimensions);
+fix_nod = fixnodes_2b(n_supports, dofs, new_dimensions);
 
 % Dirichelt index vector
 in_d = (fix_nod(:, 1) - 1) * dofs + fix_nod(:, 2);
