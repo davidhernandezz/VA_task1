@@ -17,7 +17,17 @@ for displ_supp = 1:length(n_supports) %computes the reference point displacement
 
     %% CALCULATIONS
 
-    fix_nod = fixnodes_2a(n_supports, dofs, displ_supp, y_displ_support);
+    fix_nod = zeros(dofs * length(n_supports),3);
+
+    % Fix node matrix definition
+    for i = 1:length(n_supports)
+
+        fix_nod((dofs*i-(dofs-1):dofs*i),1) = n_supports(i);
+        fix_nod((dofs*i-(dofs-1):dofs*i),2) = 1:dofs;
+        fix_nod((dofs*i-(dofs-1):dofs*i),3) = 0;
+    end
+
+    fix_nod(dofs * displ_supp - 4, 3) = y_displ_support;
 
     % Dirichelt index vector
     in_d = (fix_nod(:, 1) - 1) * dofs + fix_nod(:, 2);
