@@ -25,6 +25,8 @@ resultF = zeros(length(n_supports),dofs);
 for displ_supp = 1:length(n_supports)
 
     %% CALCULATIONS
+    
+fix_nod = zeros(dofs * length(n_supports),3);
 
     % Fix node matrix definition
     for i = 1:length(n_supports)

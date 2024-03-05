@@ -15,10 +15,16 @@ dofs = 6;
 % Define the nodes where supports are located
 n_supports = [10735; 13699; 16620; 19625; 22511; 4747];
 
+% Define the reference node
+ref_node = 1305;
+
 
 %% COMPUTATIONS
 % fix_nodes matrix
 % all fix nodes' displacements are 0
+
+fix_nod = zeros(dofs * length(n_supports),3);
+
 for i = 1:length(n_supports)
     fix_nod((dofs*i-(dofs-1):dofs*i),1) = n_supports(i);
     fix_nod((dofs*i-(dofs-1):dofs*i),2) = 1:dofs;
@@ -68,12 +74,19 @@ F(in_d) = F_d + F_d_ext;
 F = transpose(reshape(F, [dofs, length(K)/dofs]));
 F_d = transpose(reshape(F_d, [dofs, length(F_d)/dofs]));
 
-sumReactions(1) = sum(F(:,1));
-sumReactions(2) = sum(F(:,2));
-sumReactions(3) = sum(F(:,3));
-sumReactions(4) = sum(F(:,4));
-sumReactions(5) = sum(F(:,5));
-sumReactions(6) = sum(F(:,6));
+
+resultu = u(ref_node, :);
+resultF = F(ref_node, :);
+
+disp(resultu);
+disp(resultF);
+
+sumReactions = sum(F_d(:,2));
+sumWeight = sum(Fext);
+
+disp(sumWeight + sumReactions); %exercice 1.c)
+
+
 
 
 
