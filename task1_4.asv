@@ -66,28 +66,20 @@ freq = (w/(2*pi));
 %%%%%%%%
 F_n = F_n_ext;
 phi = V;
-freq_mfr = (0:10:2000);
+freq_mfr = (0:2:2000);
 b = 0.02;
 for i = 1:size(freq_mfr, 2)
     w_mfr = 2 * pi * freq_mfr(1, i);
     for j = 1:size(V, 2)
-        F_mfr = transpose(phi(:, j)) * F_n;
-        mass_term = transpose(phi(:, j)) * M(in_n, in_n) * phi(:, j);
-        stiffness_term = transpose(phi(:, j)) * K_nn * phi(:, j);
+        F_mfr = transpose(phi) * F_n;
+        mass_term = transpose(phi) * M(in_n, in_n) * phi;
+        stiffness_term = transpose(phi) * K_nn * phi;
         dump_term = 2 * mass_term * b * 2 * pi * freq(j, 1);
 
         xi(j, 1) = (F_mfr) / (-w_mfr^2*mass_term + stiffness_term + (1i*dump_term*w_mfr));
     end
-    x(:, i) = phi * xi;
-end
 
-ref = (1305 - 1) * 6 + 1;
-figure(1)
-plot(freq_mfr, abs(x(ref, :)))
-xlabel('Frequency [Hz]')
-ylabel('x displacement')
-grid on 
-grid minor
+    x = mode_shapes * xi;
 
 
 %%%%%%%%

@@ -157,7 +157,7 @@ size=size_f_1(1,1);
 modal_analysis_matrix = zeros(size,selec);
 omega_matrix = zeros(selec,1);
 
-for omega=0:2:2500
+for omega=0:2:10
     omega_rad=omega*2*pi;
     mass_modal = mass_modal_B.*((-1)*omega_rad^2);
     Q_matrix = mass_modal + stif_modal;
