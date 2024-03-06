@@ -1,9 +1,9 @@
 clear
 close all
 clc
+% This code takes some time to fully compile
 
-
-%% input data definition
+%% DATA INPUT
 % load K & M matrix
 load('fe_model.mat');
 
@@ -17,7 +17,7 @@ dofs = 6;
 n_supports = [10735; 13699; 16620; 19625; 22511; 4747];
 
 
-%% Preliminary computations
+%% CALCULATIONS
 % fix_nodes matrix
 fix_nod = zeros(dofs * length(n_supports),3);
 
@@ -32,15 +32,20 @@ in_d = (fix_nod(:, 1) - 1) * dofs + fix_nod(:, 2);
 % Dirichelt displacements vetor
 u_d = fix_nod(:, 3);
 
+% Neumann index matrix
 in_n = setdiff(transpose(1:length(K)), in_d);
 
+% Vector that repeats the g for all nodes
 g_vect = repmat(g, length(M)/dofs, 1);
 
+% Gravity force calaculation
 Fext = M * g_vect;
 
+% The force is divided in both index
 F_n_ext = Fext(in_n);
 F_d_ext = Fext(in_d);
 
+% Stiffness matrix division according to index
 K_nn = K(in_n, in_n);
 K_dd = K(in_d, in_d);
 K_nd = K(in_n, in_d);
@@ -54,64 +59,72 @@ u(in_d, 1) = u_d;
 
 u = transpose(reshape(u, [dofs, length(K)/dofs]));
 
+% Supports' forces computation
 F_d = K_dd*u_d + K_dn*u_n;
 
+% Force vector definition
 F(in_n) = F_n_ext;
 F(in_d) = F_d + F_d_ext;
 
+
+% Eigenmodes & eigenvalues calc, for modal shapes and frequencies
 [V, D] = eigs(K_nn,M(in_n, in_n),11,'smallestabs');
+
+% Frequencies calculation from eigenvalues
 lamda = diag(D);
 w = sqrt(lamda);
 freq = (w/(2*pi));
-%%%%%%%%
-F_n = F_n_ext;
-phi = V;
-freq_mfr = (0:10:2000);
-b = 0.02;
-for i = 1:size(freq_mfr, 2)
-    w_mfr = 2 * pi * freq_mfr(1, i);
-    for j = 1:size(V, 2)
-        F_mfr = transpose(phi(:, j)) * F_n;
-        mass_term = transpose(phi(:, j)) * M(in_n, in_n) * phi(:, j);
-        stiffness_term = transpose(phi(:, j)) * K_nn * phi(:, j);
-        dump_term = 2 * mass_term * b * 2 * pi * freq(j, 1);
 
+F_n = F_n_ext;
+
+% Transform matrix is modal shape matrix
+phi = V;
+
+% Freq. range to study
+freq_mfr = (0:2:2000);
+
+% Dumping ratio
+b = 0.02;
+
+% First loop that runs through the freq. range to study
+for i = 1:size(freq_mfr, 2)
+    % Hz to rad/s
+    w_mfr = 2 * pi * freq_mfr(1, i);
+    % Second loop to run through all the eigenvalues, the system's
+    % frequencies that are considered (11)
+    for j = 1:size(V, 2)
+        % Force transformation into modal coord
+        F_mfr = transpose(phi(:, j)) * F_n;
+        % Mass matrix transformation into modal coord
+        mass_term = transpose(phi(:, j)) * M(in_n, in_n) * phi(:, j);
+        % Stiffness matrix transformation into modal coord
+        stiffness_term = transpose(phi(:, j)) * K_nn * phi(:, j);
+        % dumping ratio definition
+        dump_term = 2 * mass_term * b * 2 * pi * freq(j, 1);
+        % displacement in modal coord calculation
         xi(j, 1) = (F_mfr) / (-w_mfr^2*mass_term + stiffness_term + (1i*dump_term*w_mfr));
     end
+    % transform modal displ. to physical displ.
     x(:, i) = phi * xi;
 end
 
+%% PLOT
 ref = (1305 - 1) * 6 + 1;
-figure(1)
+set(groot,'defaultAxesTickLabelInterpreter','latex');
+set(groot,'defaulttextinterpreter','latex');
+set(groot,'defaultLegendInterpreter','latex');
+
+fig1 = figure(1);
 plot(freq_mfr, abs(x(ref, :)))
-xlabel('Frequency [Hz]')
-ylabel('x displacement')
+xlabel('Frequency [Hz]', 'FontSize', 12)
+ylabel('x displacement', 'FontSize', 12)
+ylim([0 4.7*10^-3])
 grid on 
 grid minor
+box on
+set(fig1,'Units','points');
+pos = get(fig1,'Position');
+set(fig1,'PaperPositionMode','Auto','PaperUnits','Points','PaperSize',[pos(3), pos(4)])
+title_1 = "modal_freq_resp";
+print(fig1, title_1,'-dpdf','-r0')
 
-
-%%%%%%%%
-% phi = V;
-% F_mfr = transpose(phi) * F_n_ext;
-% 
-% mass_term = transpose(phi) * M(in_n, in_n) * phi;
-% stiff_term = transpose(phi) * K_nn * phi;
-% b = 0.02;
-% 
-% freq_mfr = (0:2:2000);
-% xi = zeros(1, size(V, 2));
-% for j = 1:size(freq_mfr, 2)
-%     w_mfr(1, j) = freq_mfr(1, j) * 2*pi;
-% 
-%     mass_term_final = -mass_term * w_mfr(1, j)^2;
-%     dumping = 1i* b * w_mfr(1, j) * 2 *mass_term_final * ;
-% 
-%     for k = 1:size(V, 2)
-%         xi(k, j) = (F_mfr(k, 1) / mass_term_final(k, k) + stiff_term(k, k) + dumping);
-%     end
-% end
-% 
-% x = phi * xi;
-% 
-% ref = (1305 - 1) * 6 + 1;
-% plot(freq_mfr, x(ref, :))
