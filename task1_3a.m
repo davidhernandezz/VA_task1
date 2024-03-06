@@ -9,7 +9,7 @@ load('fe_model.mat');
 % Gravity acceleration vector
 g = [0; 9.81 * 10^3; 0; 0; 0; 0];
 
-% Define number of degrees of freedom at each node  
+% Define number of degrees of freedom at each node
 dofs = 6;
 
 % define the nodes where supports are located
@@ -64,12 +64,11 @@ freq = (w/(2*pi));
 
 eigModes(in_n,:) = V;
 
-k = 1;
-for n = 1:computedEigenmode
-    for i = 1:length(K)/dofs
-        for j = 1:dofs
-            u(i,j,n) = eigModes(j+(i-1)*dofs,n);
-        end
-    end
+u = zeros(length(K)/6,dofs,computedEigenmode);
+
+for i = 1:computedEigenmode
+    u(:,:,i) = transpose(reshape(eigModes(:,i), [dofs, length(K)/dofs]));
 end
 
+fillhdf('template.h5','1eig.h5',u(:,:,1))
+fillhdf('template.h5','5eig.h5',u(:,:,5))
