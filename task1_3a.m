@@ -52,33 +52,24 @@ K_dd = K(in_d, in_d);
 K_nd = K(in_n, in_d);
 K_dn = K(in_d, in_n);
 
+computedEigenmode = 5; %5
+
 % Eigenvectors and eigenvalues calculation
-[V, D] = eigs(K_nn,M(in_n, in_n),5,'smallestabs');
+[V, D] = eigs(K_nn,M(in_n, in_n),computedEigenmode,'smallestabs');
 
 % Frequency calculation
 lambda = diag(D);
 w = sqrt(lambda);
 freq = (w/(2*pi));
 
-computedEigenmode = 1; % 1 to 5
+eigModes(in_n,:) = V;
 
-Qnn = -M(in_n, in_n) * lambda(computedEigenmode) + K_nn;
-u_n = Qnn\F_n_ext;
-
-% The displacements are divided in both index
-u(in_n, 1) = u_n;
-u(in_d, 1) = u_d;
-
-% Displacements reshape for better visualitation
-u = transpose(reshape(u, [dofs, length(K)/dofs]));
-
-% Supports' forces computation
-F_d = K_dd*u_d + K_dn*u_n;
-
-% Force vector definition
-F(in_n) = F_n_ext;
-F(in_d) = F_d + F_d_ext;
-F = transpose(reshape(F, [dofs, length(K)/dofs]));
-F_d = transpose(reshape(F_d, [dofs, length(F_d)/dofs]));
-
+k = 1;
+for n = 1:computedEigenmode
+    for i = 1:length(K)/dofs
+        for j = 1:dofs
+            u(i,j,n) = eigModes(j+(i-1)*dofs,n);
+        end
+    end
+end
 
