@@ -44,14 +44,15 @@ computedEigenmodes = 5; %5
 [V, D] = eigs(K,M,computedEigenmodes,'smallestabs');
 
 % Frequency calculation
-lamda = diag(D);
-w = sqrt(lamda);
+lambda = diag(D);
+w = sqrt(lambda);
 freq = (w/(2*pi));
 
 eigModes(in_n,:) = V;
 
 u = zeros(length(K)/dofs,dofs,computedEigenmodes);
 
+% Displacements reshape for better visualitation
 for i = 1:computedEigenmodes
     u(:,:,i) = transpose(reshape(eigModes(:,i), [dofs, length(K)/dofs]));
 end

@@ -66,6 +66,7 @@ eigModes(in_n,:) = V;
 
 u = zeros(length(K)/dofs,dofs,computedEigenmodes);
 
+% Displacements reshape for better visualitation
 for i = 1:computedEigenmodes
     u(:,:,i) = transpose(reshape(eigModes(:,i), [dofs, length(K)/dofs]));
 end
