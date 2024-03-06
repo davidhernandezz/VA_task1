@@ -74,17 +74,18 @@ F(in_d) = F_d + F_d_ext;
 F = transpose(reshape(F, [dofs, length(K)/dofs]));
 F_d = transpose(reshape(F_d, [dofs, length(F_d)/dofs]));
 
-
+% Resulting displacements on the reference node
 resultu = u(ref_node, :);
 resultF = F(ref_node, :);
 
 disp(resultu);
 disp(resultF);
 
+% Sum of the y axis forces in order to check script
 sumReactions = sum(F_d(:,2));
 sumWeight = sum(Fext);
 
-disp(sumWeight + sumReactions); %exercice 1.c)
+disp(sumWeight + sumReactions); %Shall be 0 (exercice 1.c)
 
 
 

@@ -1,4 +1,5 @@
 function resultu = function_2a(dofs)
+%This code is the same as the task1_2a but as a function to run task1_2b
 
 % load K & M matrix
 load('fe_model.mat');
