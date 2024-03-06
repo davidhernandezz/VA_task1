@@ -7,7 +7,7 @@ clc
 load('fe_model.mat');
 
 % Gravity acceleration vector
-g = [0; 9.81 * 10^3; 0; 0; 0; 0];
+g = [0; 0; 0; 0; 0; 0];
 
 % Define number of degrees of freedom at each node
 dofs = 6;
@@ -52,10 +52,10 @@ K_dd = K(in_d, in_d);
 K_nd = K(in_n, in_d);
 K_dn = K(in_d, in_n);
 
-computedEigenmode = 5; %5
+computedEigenmodes = 5; %5
 
 % Eigenvectors and eigenvalues calculation
-[V, D] = eigs(K_nn,M(in_n, in_n),computedEigenmode,'smallestabs');
+[V, D] = eigs(K_nn,M(in_n, in_n),computedEigenmodes,'smallestabs');
 
 % Frequency calculation
 lambda = diag(D);
@@ -64,9 +64,9 @@ freq = (w/(2*pi));
 
 eigModes(in_n,:) = V;
 
-u = zeros(length(K)/6,dofs,computedEigenmode);
+u = zeros(length(K)/dofs,dofs,computedEigenmodes);
 
-for i = 1:computedEigenmode
+for i = 1:computedEigenmodes
     u(:,:,i) = transpose(reshape(eigModes(:,i), [dofs, length(K)/dofs]));
 end
 
