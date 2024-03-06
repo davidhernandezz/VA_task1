@@ -74,5 +74,5 @@ resultF = F(ref_node, :);
 disp(resultu);
 disp(resultF);
 
-new_dimensions = 1 + u(n_supports, 2);
+new_dimensions = 1 - u(n_supports, 2);
 
